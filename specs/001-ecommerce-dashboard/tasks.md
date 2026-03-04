@@ -109,9 +109,9 @@ All source code lives at repository root (single-file Streamlit app):
 
 **Purpose**: Validation, deployment readiness, and final correctness check.
 
-- [ ] T020 [P] Run full test suite in `tests/test_dashboard.py` with `pytest tests/ -v` and confirm all tests pass with zero failures or warnings
-- [ ] T021 Validate dashboard locally against `quickstart.md` expected values: run `streamlit run dashboard.py`, open `http://localhost:8501`, confirm Total Orders = 482, Total Sales in range $650,000–$700,000, top category visible, all 4 regions shown
-- [ ] T022 Verify deployment readiness: confirm `requirements.txt` is at repo root (not in a subdirectory), `data/sales-data.csv` is committed and not in `.gitignore`, `dashboard.py` is at repo root — all three conditions required per `research.md` Streamlit Community Cloud deployment decision
+- [x] T020 [P] Run full test suite in `tests/test_dashboard.py` with `pytest tests/ -v` and confirm all tests pass with zero failures or warnings
+- [x] T021 Validate dashboard locally against `quickstart.md` expected values: run `streamlit run dashboard.py`, open `http://localhost:8501`, confirm Total Orders = 482, Total Sales in range $650,000–$700,000, top category visible, all 4 regions shown
+- [x] T022 Verify deployment readiness: confirm `requirements.txt` is at repo root (not in a subdirectory), `data/sales-data.csv` is committed and not in `.gitignore`, `dashboard.py` is at repo root — all three conditions required per `research.md` Streamlit Community Cloud deployment decision
 
 ---
 
