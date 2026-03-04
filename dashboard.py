@@ -47,7 +47,15 @@ def calculate_kpis(df: pd.DataFrame) -> dict:
 
 
 def prepare_trend_data(df: pd.DataFrame) -> pd.DataFrame:
-    pass
+    date_range = df["date"].max() - df["date"].min()
+    freq = "D" if date_range.days <= 30 else "MS"
+    trend = (
+        df.groupby(pd.Grouper(key="date", freq=freq))["total_amount"]
+        .sum()
+        .reset_index()
+        .rename(columns={"date": "month", "total_amount": "sales"})
+    )
+    return trend.sort_values("month").reset_index(drop=True)
 
 
 def prepare_category_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -59,7 +67,20 @@ def prepare_region_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_trend_chart(trend_df: pd.DataFrame) -> go.Figure:
-    pass
+    fig = go.Figure(
+        go.Scatter(
+            x=trend_df["month"],
+            y=trend_df["sales"],
+            mode="lines+markers",
+            hovertemplate="%{x|%b %Y}<br>$%{y:,.2f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Sales Trend Over Time",
+        xaxis_title="Month",
+        yaxis_title="Total Sales ($)",
+    )
+    return fig
 
 
 def build_category_chart(cat_df: pd.DataFrame) -> go.Figure:
@@ -84,6 +105,9 @@ def main() -> None:
     col1, col2 = st.columns(2)
     col1.metric("Total Sales", f"${kpis['total_sales']:,.2f}")
     col2.metric("Total Orders", f"{kpis['total_orders']:,}")
+
+    trend_df = prepare_trend_data(df)
+    st.plotly_chart(build_trend_chart(trend_df), use_container_width=True)
 
 
 if __name__ == "__main__":

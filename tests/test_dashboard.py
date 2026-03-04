@@ -71,3 +71,41 @@ def test_calculate_kpis_total_sales_is_sum():
     df = pd.DataFrame({"total_amount": [10.0, 20.0, 30.0]})
     result = calculate_kpis(df)
     assert result["total_sales"] == pytest.approx(60.0)
+
+
+# --- prepare_trend_data ---
+
+def _make_trend_df(dates, amounts):
+    return pd.DataFrame({
+        "date": pd.to_datetime(dates),
+        "total_amount": amounts,
+    })
+
+
+def test_prepare_trend_data_output_columns():
+    df = _make_trend_df(["2024-01-15", "2024-02-15", "2024-03-15"], [100.0, 200.0, 300.0])
+    result = prepare_trend_data(df)
+    assert "month" in result.columns
+    assert "sales" in result.columns
+
+
+def test_prepare_trend_data_sorted_ascending():
+    df = _make_trend_df(["2024-03-15", "2024-01-15", "2024-02-15"], [300.0, 100.0, 200.0])
+    result = prepare_trend_data(df)
+    assert result["month"].is_monotonic_increasing
+
+
+def test_prepare_trend_data_monthly_aggregation_for_long_range():
+    # Two transactions in Jan, one in Feb — range > 30 days → monthly freq
+    df = _make_trend_df(["2024-01-10", "2024-01-20", "2024-02-10"], [100.0, 50.0, 200.0])
+    result = prepare_trend_data(df)
+    assert len(result) == 2
+    assert result["sales"].iloc[0] == pytest.approx(150.0)  # Jan
+    assert result["sales"].iloc[1] == pytest.approx(200.0)  # Feb
+
+
+def test_prepare_trend_data_daily_aggregation_for_short_range():
+    # Range is 9 days (≤30) → daily freq, one row per distinct date
+    df = _make_trend_df(["2024-01-01", "2024-01-05", "2024-01-10"], [100.0, 200.0, 300.0])
+    result = prepare_trend_data(df)
+    assert len(result) >= 3
