@@ -109,3 +109,40 @@ def test_prepare_trend_data_daily_aggregation_for_short_range():
     df = _make_trend_df(["2024-01-01", "2024-01-05", "2024-01-10"], [100.0, 200.0, 300.0])
     result = prepare_trend_data(df)
     assert len(result) >= 3
+
+
+# --- prepare_category_data ---
+
+def _make_category_df(categories, amounts):
+    return pd.DataFrame({
+        "category": categories,
+        "total_amount": amounts,
+    })
+
+
+def test_prepare_category_data_output_columns():
+    df = _make_category_df(["A", "B", "C"], [100.0, 200.0, 300.0])
+    result = prepare_category_data(df)
+    assert "category" in result.columns
+    assert "sales" in result.columns
+
+
+def test_prepare_category_data_sorted_descending():
+    df = _make_category_df(["A", "B", "C"], [100.0, 300.0, 200.0])
+    result = prepare_category_data(df)
+    assert result["sales"].is_monotonic_decreasing
+
+
+def test_prepare_category_data_all_categories_present():
+    df = _make_category_df(["A", "B", "C", "A"], [100.0, 200.0, 300.0, 50.0])
+    result = prepare_category_data(df)
+    assert set(result["category"]) == {"A", "B", "C"}
+
+
+def test_prepare_category_data_sales_is_sum_per_category():
+    df = _make_category_df(["A", "B", "A"], [100.0, 200.0, 50.0])
+    result = prepare_category_data(df)
+    a_sales = result.loc[result["category"] == "A", "sales"].iloc[0]
+    b_sales = result.loc[result["category"] == "B", "sales"].iloc[0]
+    assert a_sales == pytest.approx(150.0)
+    assert b_sales == pytest.approx(200.0)

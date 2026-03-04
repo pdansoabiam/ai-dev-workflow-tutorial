@@ -59,7 +59,14 @@ def prepare_trend_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def prepare_category_data(df: pd.DataFrame) -> pd.DataFrame:
-    pass
+    return (
+        df.groupby("category")["total_amount"]
+        .sum()
+        .reset_index()
+        .rename(columns={"total_amount": "sales"})
+        .sort_values("sales", ascending=False)
+        .reset_index(drop=True)
+    )
 
 
 def prepare_region_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -84,7 +91,19 @@ def build_trend_chart(trend_df: pd.DataFrame) -> go.Figure:
 
 
 def build_category_chart(cat_df: pd.DataFrame) -> go.Figure:
-    pass
+    fig = go.Figure(
+        go.Bar(
+            x=cat_df["category"],
+            y=cat_df["sales"],
+            hovertemplate="%{x}<br>$%{y:,.2f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Sales by Category",
+        xaxis_title="Category",
+        yaxis_title="Total Sales ($)",
+    )
+    return fig
 
 
 def build_region_chart(region_df: pd.DataFrame) -> go.Figure:
