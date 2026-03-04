@@ -70,7 +70,14 @@ def prepare_category_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def prepare_region_data(df: pd.DataFrame) -> pd.DataFrame:
-    pass
+    return (
+        df.groupby("region")["total_amount"]
+        .sum()
+        .reset_index()
+        .rename(columns={"total_amount": "sales"})
+        .sort_values("sales", ascending=False)
+        .reset_index(drop=True)
+    )
 
 
 def build_trend_chart(trend_df: pd.DataFrame) -> go.Figure:
@@ -107,7 +114,19 @@ def build_category_chart(cat_df: pd.DataFrame) -> go.Figure:
 
 
 def build_region_chart(region_df: pd.DataFrame) -> go.Figure:
-    pass
+    fig = go.Figure(
+        go.Bar(
+            x=region_df["region"],
+            y=region_df["sales"],
+            hovertemplate="%{x}<br>$%{y:,.2f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Sales by Region",
+        xaxis_title="Region",
+        yaxis_title="Total Sales ($)",
+    )
+    return fig
 
 
 def main() -> None:
@@ -127,6 +146,14 @@ def main() -> None:
 
     trend_df = prepare_trend_data(df)
     st.plotly_chart(build_trend_chart(trend_df), use_container_width=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        cat_df = prepare_category_data(df)
+        st.plotly_chart(build_category_chart(cat_df), use_container_width=True)
+    with col2:
+        region_df = prepare_region_data(df)
+        st.plotly_chart(build_region_chart(region_df), use_container_width=True)
 
 
 if __name__ == "__main__":

@@ -146,3 +146,40 @@ def test_prepare_category_data_sales_is_sum_per_category():
     b_sales = result.loc[result["category"] == "B", "sales"].iloc[0]
     assert a_sales == pytest.approx(150.0)
     assert b_sales == pytest.approx(200.0)
+
+
+# --- prepare_region_data ---
+
+def _make_region_df(regions, amounts):
+    return pd.DataFrame({
+        "region": regions,
+        "total_amount": amounts,
+    })
+
+
+def test_prepare_region_data_output_columns():
+    df = _make_region_df(["North", "South", "East"], [100.0, 200.0, 300.0])
+    result = prepare_region_data(df)
+    assert "region" in result.columns
+    assert "sales" in result.columns
+
+
+def test_prepare_region_data_sorted_descending():
+    df = _make_region_df(["North", "South", "East"], [100.0, 300.0, 200.0])
+    result = prepare_region_data(df)
+    assert result["sales"].is_monotonic_decreasing
+
+
+def test_prepare_region_data_all_regions_present():
+    df = _make_region_df(["North", "South", "East", "North"], [100.0, 200.0, 300.0, 50.0])
+    result = prepare_region_data(df)
+    assert set(result["region"]) == {"North", "South", "East"}
+
+
+def test_prepare_region_data_sales_is_sum_per_region():
+    df = _make_region_df(["North", "South", "North"], [100.0, 200.0, 50.0])
+    result = prepare_region_data(df)
+    north_sales = result.loc[result["region"] == "North", "sales"].iloc[0]
+    south_sales = result.loc[result["region"] == "South", "sales"].iloc[0]
+    assert north_sales == pytest.approx(150.0)
+    assert south_sales == pytest.approx(200.0)
