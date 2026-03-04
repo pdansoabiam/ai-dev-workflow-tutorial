@@ -86,6 +86,8 @@ def build_trend_chart(trend_df: pd.DataFrame) -> go.Figure:
             x=trend_df["month"],
             y=trend_df["sales"],
             mode="lines+markers",
+            line=dict(color="#F47A20"),
+            marker=dict(color="#F47A20"),
             hovertemplate="%{x|%b %Y}<br>$%{y:,.2f}<extra></extra>",
         )
     )
@@ -102,6 +104,7 @@ def build_category_chart(cat_df: pd.DataFrame) -> go.Figure:
         go.Bar(
             x=cat_df["category"],
             y=cat_df["sales"],
+            marker_color="#1E4FAF",
             hovertemplate="%{x}<br>$%{y:,.2f}<extra></extra>",
         )
     )
@@ -118,6 +121,7 @@ def build_region_chart(region_df: pd.DataFrame) -> go.Figure:
         go.Bar(
             x=region_df["region"],
             y=region_df["sales"],
+            marker_color="#1E4FAF",
             hovertemplate="%{x}<br>$%{y:,.2f}<extra></extra>",
         )
     )
