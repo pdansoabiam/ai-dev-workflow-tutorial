@@ -40,7 +40,10 @@ def load_data(filepath: str = "data/sales-data.csv") -> pd.DataFrame:
 
 
 def calculate_kpis(df: pd.DataFrame) -> dict:
-    pass
+    return {
+        "total_sales": float(df["total_amount"].sum()),
+        "total_orders": len(df),
+    }
 
 
 def prepare_trend_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -68,7 +71,19 @@ def build_region_chart(region_df: pd.DataFrame) -> go.Figure:
 
 
 def main() -> None:
-    pass
+    st.title("ShopSmart Sales Dashboard")
+
+    try:
+        df = load_data()
+    except Exception as e:
+        st.error(f"Unexpected error loading data: {e}")
+        st.stop()
+        return
+
+    kpis = calculate_kpis(df)
+    col1, col2 = st.columns(2)
+    col1.metric("Total Sales", f"${kpis['total_sales']:,.2f}")
+    col2.metric("Total Orders", f"{kpis['total_orders']:,}")
 
 
 if __name__ == "__main__":

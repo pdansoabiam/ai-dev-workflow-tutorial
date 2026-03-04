@@ -50,3 +50,24 @@ def test_load_data_file_not_found_handled_gracefully():
         load_data("nonexistent_file_xyz.csv")
         mock_error.assert_called_once()
         mock_stop.assert_called_once()
+
+
+# --- calculate_kpis ---
+
+def test_calculate_kpis_returns_required_keys():
+    df = pd.DataFrame({"total_amount": [10.0, 20.0, 30.0]})
+    result = calculate_kpis(df)
+    assert "total_sales" in result
+    assert "total_orders" in result
+
+
+def test_calculate_kpis_total_orders_is_row_count():
+    df = pd.DataFrame({"total_amount": [10.0, 20.0, 30.0]})
+    result = calculate_kpis(df)
+    assert result["total_orders"] == 3
+
+
+def test_calculate_kpis_total_sales_is_sum():
+    df = pd.DataFrame({"total_amount": [10.0, 20.0, 30.0]})
+    result = calculate_kpis(df)
+    assert result["total_sales"] == pytest.approx(60.0)

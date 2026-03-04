@@ -53,9 +53,9 @@ All source code lives at repository root (single-file Streamlit app):
 
 **Independent Test**: Open `http://localhost:8501` in a fresh browser tab. Two `st.metric` cards appear — one labelled "Total Sales" showing ~$650K–$700K formatted as `$XXX,XXX.XX`, one labelled "Total Orders" showing `482`. No clicks required.
 
-- [ ] T006 [P] [US1] Write pytest unit tests for `calculate_kpis()` in `tests/test_dashboard.py`: (a) given a 3-row test DataFrame, `total_orders` equals 3; (b) `total_sales` equals the sum of the `total_amount` column as a float; (c) both keys `"total_sales"` and `"total_orders"` are present in the returned dict
-- [ ] T007 [US1] Implement `calculate_kpis(df: pd.DataFrame) -> dict` in `dashboard.py`: return `{"total_sales": float(df["total_amount"].sum()), "total_orders": len(df)}` — pure function, no side effects, per `contracts/functions.md`
-- [ ] T008 [US1] Implement KPI section in `main()` in `dashboard.py`: add `st.title("ShopSmart Sales Dashboard")`; call `load_data()` wrapped in `try/except` with `st.error()` + `st.stop()`; call `calculate_kpis(df)`; render a `st.columns(2)` row — left column: `st.metric("Total Sales", f"${kpis['total_sales']:,.2f}")`, right column: `st.metric("Total Orders", f"{kpis['total_orders']:,}")`
+- [x] T006 [P] [US1] Write pytest unit tests for `calculate_kpis()` in `tests/test_dashboard.py`: (a) given a 3-row test DataFrame, `total_orders` equals 3; (b) `total_sales` equals the sum of the `total_amount` column as a float; (c) both keys `"total_sales"` and `"total_orders"` are present in the returned dict
+- [x] T007 [US1] Implement `calculate_kpis(df: pd.DataFrame) -> dict` in `dashboard.py`: return `{"total_sales": float(df["total_amount"].sum()), "total_orders": len(df)}` — pure function, no side effects, per `contracts/functions.md`
+- [x] T008 [US1] Implement KPI section in `main()` in `dashboard.py`: add `st.title("ShopSmart Sales Dashboard")`; call `load_data()` wrapped in `try/except` with `st.error()` + `st.stop()`; call `calculate_kpis(df)`; render a `st.columns(2)` row — left column: `st.metric("Total Sales", f"${kpis['total_sales']:,.2f}")`, right column: `st.metric("Total Orders", f"{kpis['total_orders']:,}")`
 
 **Checkpoint**: Run `streamlit run dashboard.py`. Dashboard title and both KPI cards appear. Total Orders = 482, Total Sales in range $650,000–$700,000.
 
